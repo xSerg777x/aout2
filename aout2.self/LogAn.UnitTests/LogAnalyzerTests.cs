@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 
 namespace LogAn.UnitTests
 {
@@ -6,9 +7,10 @@ namespace LogAn.UnitTests
     public class LogAnalyzerTests
     {
         [Test]
+        [Ignore("Устарел")]
         public void IsValidLogFileName_BadExtension_ReturnsFalse()
         {
-            var logAnanlyzer = new LogAnanlyzer();
+            var logAnanlyzer = MakeLogAnanlyzer();
 
             var result = logAnanlyzer.IsValidLogFileName("dasladlfkj.foo");
 
@@ -16,9 +18,10 @@ namespace LogAn.UnitTests
         }
 
         [Test]
+        [Ignore("Устарел")]
         public void IsValidLogFileName_GoodExtensionLowercase_ReturnsTrue()
         {
-            var logAnanlyzer = new LogAnanlyzer();
+            var logAnanlyzer = MakeLogAnanlyzer();
 
             var result = logAnanlyzer.IsValidLogFileName("dskaflaskdjf.slf");
 
@@ -26,25 +29,43 @@ namespace LogAn.UnitTests
         }
 
         [Test]
+        [Ignore("Устарел")]
         public void IsValidLogFileName_GoodExtensionUppercase_ReturnsTrue()
         {
-            var logAnanlyzer = new LogAnanlyzer();
+            var logAnanlyzer = MakeLogAnanlyzer();
 
             var result = logAnanlyzer.IsValidLogFileName("lkadsflajsdf.SLF");
 
             Assert.True(result);
         }
 
-        [TestCase("lasdkfla.slf", true)]
-        [TestCase("ladkjflasdfj.SLF", true)]
-        [TestCase("akasdf.foo", false)]
+        private LogAnanlyzer MakeLogAnanlyzer()
+        {
+            return new LogAnanlyzer();
+        }
+
+        [TestCase("lasdkflasdffa.slf", true)]
+        [TestCase("ladkjflafsdfj.SLF", true)]
+        [TestCase("aksdfasdfasdf.foo", false)]
         public void IsValidLogFileName_VariousExtension_CheckThem(string fileName, bool expected)
         {
-            var logAnanlyzer = new LogAnanlyzer();
+            var logAnanlyzer = MakeLogAnanlyzer();
 
             var result = logAnanlyzer.IsValidLogFileName(fileName);
 
             Assert.AreEqual(expected, result);
+        }
+
+        [TestCase("")]
+        [TestCase("   ")]
+        [TestCase(null)]
+        public void IsValidLogFileName_NullOrWhiteSpaceFileName_ThrowsArgumentException(string fileName)
+        {
+            var la = MakeLogAnanlyzer();
+
+            var ex = Assert.Catch<ArgumentException>(() => la.IsValidLogFileName(fileName));
+
+            StringAssert.Contains("Необходимо указывать имя файла", ex.Message);
         }
     }
 }
